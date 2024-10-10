@@ -1,16 +1,15 @@
 <template>
-  <div class="jumbotron vertical-center">
+  <div class="account-management">
     <div class="container">
       <div class="row">
         <div class="col-sm-12">
           <h1>Accounts</h1>
           <hr />
           <br />
-          <!-- Allert Message -->
-          <b-alert v-if="showMessage" variant="success" show>{{
-            message
-          }}</b-alert>
-          <!-- b-alert v-if="error" variant="danger" show>{{ error }}</b-alert-->
+          <!-- Alert Message -->
+          <b-alert v-if="showMessage" variant="success" show>
+            {{ message }}
+          </b-alert>
 
           <button
             type="button"
@@ -27,6 +26,7 @@
                 <th scope="col">Account Number</th>
                 <th scope="col">Account Balance</th>
                 <th scope="col">Account Currency</th>
+                <th scope="col">Country</th>
                 <th scope="col">Account Status</th>
                 <th scope="col">Actions</th>
               </tr>
@@ -37,15 +37,17 @@
                 <td>{{ account.account_number }}</td>
                 <td>{{ account.balance }}</td>
                 <td>{{ account.currency }}</td>
+                <td>{{ account.country }}</td>
                 <td>
                   <span
                     v-if="account.status == 'Active'"
                     class="badge badge-success"
-                    >{{ account.status }}</span
                   >
-                  <span v-else class="badge badge-danger">{{
-                    account.status
-                  }}</span>
+                    {{ account.status }}
+                  </span>
+                  <span v-else class="badge badge-danger">
+                    {{ account.status }}
+                  </span>
                 </td>
                 <td>
                   <div class="btn-group" role="group">
@@ -74,6 +76,8 @@
           </footer>
         </div>
       </div>
+
+      <!-- Modal for Create Account -->
       <b-modal
         ref="addAccountModal"
         id="account-modal"
@@ -93,8 +97,7 @@
               v-model="createAccountForm.name"
               placeholder="Account Name"
               required
-            >
-            </b-form-input>
+            ></b-form-input>
           </b-form-group>
           <b-form-group
             id="form-currency-group"
@@ -107,15 +110,27 @@
               v-model="createAccountForm.currency"
               placeholder="$ or €"
               required
-            >
-            </b-form-input>
+            ></b-form-input>
           </b-form-group>
-
+          <b-form-group
+            id="form-country-group"
+            label="Country:"
+            label-for="form-country-input"
+          >
+            <b-form-input
+              id="form-country-input"
+              type="text"
+              v-model="createAccountForm.country"
+              placeholder="Country"
+              required
+            ></b-form-input>
+          </b-form-group>
           <b-button type="submit" variant="outline-info">Submit</b-button>
         </b-form>
       </b-modal>
       <!-- End of Modal for Create Account-->
-      <!-- Start of Modal for Edit Account-->
+
+      <!-- Modal for Edit Account -->
       <b-modal
         ref="editAccountModal"
         id="edit-account-modal"
@@ -135,8 +150,20 @@
               v-model="editAccountForm.name"
               placeholder="Account Name"
               required
-            >
-            </b-form-input>
+            ></b-form-input>
+          </b-form-group>
+          <b-form-group
+            id="form-edit-country-group"
+            label="Country:"
+            label-for="form-edit-country-input"
+          >
+            <b-form-input
+              id="form-edit-country-input"
+              type="text"
+              v-model="editAccountForm.country"
+              placeholder="Country"
+              required
+            ></b-form-input>
           </b-form-group>
           <b-button type="submit" variant="outline-info">Update</b-button>
         </b-form>
@@ -148,6 +175,7 @@
 
 <script>
 import axios from "axios";
+
 export default {
   name: "AppAccounts",
   data() {
@@ -156,10 +184,12 @@ export default {
       createAccountForm: {
         name: "",
         currency: "",
+        country: "", // Added country field
       },
       editAccountForm: {
         id: "",
         name: "",
+        country: "", // Added country field
       },
       showMessage: false,
       message: "",
@@ -170,7 +200,7 @@ export default {
      * RESTful requests
      ***************************************************/
 
-    //GET function
+    // GET function
     RESTgetAccounts() {
       const path = `${process.env.VUE_APP_ROOT_URL}/accounts`;
       axios
@@ -191,7 +221,7 @@ export default {
         .then((response) => {
           this.RESTgetAccounts();
           // For message alert
-          this.message = "Account Created succesfully!";
+          this.message = "Account Created successfully!";
           // To actually show the message
           this.showMessage = true;
           // To hide the message after 3 seconds
@@ -213,7 +243,7 @@ export default {
         .then((response) => {
           this.RESTgetAccounts();
           // For message alert
-          this.message = "Account Updated succesfully!";
+          this.message = "Account Updated successfully!";
           // To actually show the message
           this.showMessage = true;
           // To hide the message after 3 seconds
@@ -235,7 +265,7 @@ export default {
         .then((response) => {
           this.RESTgetAccounts();
           // For message alert
-          this.message = "Account Deleted succesfully!";
+          this.message = "Account Deleted successfully!";
           // To actually show the message
           this.showMessage = true;
           // To hide the message after 3 seconds
@@ -251,23 +281,26 @@ export default {
 
     /***************************************************
      * FORM MANAGEMENT
-     * *************************************************/
+     ***************************************************/
 
     // Initialize forms empty
     initForm() {
       this.createAccountForm.name = "";
       this.createAccountForm.currency = "";
+      this.createAccountForm.country = ""; // Reset country field
       this.editAccountForm.id = "";
       this.editAccountForm.name = "";
+      this.editAccountForm.country = ""; // Reset country field
     },
 
     // Handle submit event for create account
     onSubmit(e) {
-      e.preventDefault(); //prevent default form submit form the browser
-      this.$refs.addAccountModal.hide(); //hide the modal when submitted
+      e.preventDefault(); // Prevent default form submit from the browser
+      this.$refs.addAccountModal.hide(); // Hide the modal when submitted
       const payload = {
         name: this.createAccountForm.name,
         currency: this.createAccountForm.currency,
+        country: this.createAccountForm.country, // Include country in payload
       };
       this.RESTcreateAccount(payload);
       this.initForm();
@@ -275,10 +308,11 @@ export default {
 
     // Handle submit event for edit account
     onSubmitUpdate(e) {
-      e.preventDefault(); //prevent default form submit form the browser
-      this.$refs.editAccountModal.hide(); //hide the modal when submitted
+      e.preventDefault(); // Prevent default form submit from the browser
+      this.$refs.editAccountModal.hide(); // Hide the modal when submitted
       const payload = {
         name: this.editAccountForm.name,
+        country: this.editAccountForm.country, // Include country in payload
       };
       this.RESTupdateAccount(payload, this.editAccountForm.id);
       this.initForm();
@@ -286,7 +320,11 @@ export default {
 
     // Handle edit button
     editAccount(account) {
-      this.editAccountForm = account;
+      this.editAccountForm = {
+        id: account.id,
+        name: account.name,
+        country: account.country, // Include country when editing
+      };
     },
 
     // Handle Delete button
@@ -296,10 +334,26 @@ export default {
   },
 
   /***************************************************
-   * LIFECYClE HOOKS
+   * LIFECYCLE HOOKS
    ***************************************************/
   created() {
     this.RESTgetAccounts();
   },
 };
 </script>
+
+<style scoped>
+.jumbotron {
+  padding: 2rem 1rem;
+}
+
+.vertical-center {
+  min-height: 100vh; /* Fallback for browsers that don't support VH units */
+  display: flex;
+  align-items: center;
+}
+
+footer {
+  margin-top: 20px;
+} 
+</style>
