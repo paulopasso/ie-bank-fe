@@ -1,20 +1,26 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Skull from '../components/Skull.vue'
+import Home from '../components/Home.vue'
 import AppAccounts from '../components/AppAccounts.vue'
+import Skull from '../components/Skull.vue'
 
 Vue.use(VueRouter)
 
 const routes = [
   {
-    path: '/skull',
-    name: 'Skull',
-    component: Skull
+    path: '/',
+    name: 'Home',
+    component: Home
   },
   {
     path: '/accounts',
-    name: 'AppAccounts',
+    name: 'Accounts',
     component: AppAccounts
+  },
+  {
+    path: '/skull',
+    name: 'Skull',
+    component: Skull
   }
 ]
 
