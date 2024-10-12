@@ -22,8 +22,8 @@ jobs:
       - name: Set up Node.js version
         uses: actions/setup-node@v3
         with:
-          node-version: '18.x'
-          cache: 'npm'
+          node-version: "18.x"
+          cache: "npm"
 
       - name: npm install, build, and test
         run: |
@@ -40,7 +40,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     environment:
-      name: 'Development'
+      name: "Development"
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
     steps:
@@ -52,10 +52,20 @@ jobs:
       - uses: azure/login@v2
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-      
-      - name: 'Deploy to Azure Web App'
+
+      - name: "Deploy to Azure Web App"
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
         with:
           app-name: ${{ env.FRONTEND_WEBAPP_DEV }}
           package: .
+
+      - name: Configure App Settings (DEV)
+        uses: azure/appservice-settings@v1
+        with:
+          app-name: ${{ env.FRONTEND_WEBAPP_DEV }}
+          app-settings-json: |
+            [{"name": "NODE_ENV",
+            "value": "${{ vars.NODE_ENV }}"},
+            {"name": "VUE_APP_ROOT_API",
+            "value": "${{ vars.VUE_APP_ROOT_URL }}"}
