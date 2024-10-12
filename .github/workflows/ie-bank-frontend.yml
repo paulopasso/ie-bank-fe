@@ -27,6 +27,10 @@ jobs:
           cache: "npm"
 
       - name: npm install, build, and test
+        env:
+          NODE_ENV: ${{ vars.NODE_ENV }}
+          VUE_APP_ROOT_API: ${{ vars.VUE_APP_ROOT_URL }}
+          BASE_URL: ${{ vars.BASE_URL }}
         run: |
           npm install
           npm run build -- --mode development --dest dist-dev ## this command will build the vue.js app using .env.development variables into the dest-div/ folder
