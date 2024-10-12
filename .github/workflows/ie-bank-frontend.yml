@@ -5,9 +5,17 @@ name: ie-bank-frontend
 
 on:
   push:
+    paths:
+      - "**"
+    branches:
+      - "*"
+  pull_request:
     branches:
       - main
+    paths:
+      - "**"
   workflow_dispatch:
+
 
 env:
   FRONTEND_WEBAPP_DEV: pruizalliata-fe-dev
