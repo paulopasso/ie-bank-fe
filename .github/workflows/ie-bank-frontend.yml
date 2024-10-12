@@ -67,5 +67,7 @@ jobs:
           app-settings-json: |
             [{"name": "NODE_ENV",
             "value": "${{ vars.NODE_ENV }}"},
-            {"name": "VUE_APP_ROOT_API",
-            "value": "${{ vars.VUE_APP_ROOT_URL }}"}]
+            {"name": "VUE_APP_ROOT_URL",
+            "value": "${{ vars.VUE_APP_ROOT_URL }}"},
+            {"name": "BASE_URL",
+            "value": "${{ vars.BASE_URL }}"}]
