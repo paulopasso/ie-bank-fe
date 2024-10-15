@@ -9,7 +9,7 @@ import BootstrapVue from "bootstrap-vue";
 Vue.config.productionTip = false
 
 Vue.use(BootstrapVue);
-
+//merge 
 new Vue({
   router,
   render: h => h(App)
